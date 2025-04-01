@@ -1,0 +1,175 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+	.imgs{
+		background-image: url('https://static.vecteezy.com/system/resources/previews/049/111/089/non_2x/male-customer-and-shopping-basket-icon-consumer-society-shopping-service-on-online-web-and-offers-home-delivery-connecting-stores-around-the-world-show-orders-for-products-online-payment-free-photo.jpg');
+		background-position: center;
+		background-size: cover;
+		height: 300px;
+		border-radius: 7px;
+	}
+	/* Change the appearance of the slider */
+.slider {
+    position: relative;
+    width: 100%;
+    height: 500px; /* Adjust the height */
+    overflow: hidden;
+}
+
+/* Custom navigation dots */
+.callbacks_container .rslides_tabs {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.callbacks_container .rslides_tabs li a {
+    background: #ff4500; /* Change dot color */
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Add transition effects */
+.slider-img, .slider-img-2, .slider-img-4 {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease-in-out;
+}
+.slider-img {
+    background-image: url('https://static.vecteezy.com/system/resources/previews/006/966/147/non_2x/man-using-mobile-payments-online-shopping-and-icon-customer-network-connection-on-screen-m-banking-and-omni-channel-photo.jpg'); /* Replace with your image URL */
+}
+
+.slider-img-2 {
+    background-image: url('https://static.vecteezy.com/system/resources/previews/009/377/476/non_2x/managing-and-planning-business-processes-and-workflows-for-higher-goals-free-photo.jpg'); /* Replace with your image URL */
+}
+
+.slider-img-4 {
+    background-image: url('https://static.vecteezy.com/system/resources/previews/003/621/227/non_2x/man-holding-tablet-with-padlock-shield-protects-security-icon-on-the-virtual-display-cyber-security-safe-data-protection-business-technology-privacy-concept-information-security-system-free-photo.jpg'); /* Replace with your image URL */
+}
+
+.slider-img {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('https://static.vecteezy.com/system/resources/previews/010/820/050/non_2x/document-management-system-online-documentation-database-and-process-automation-to-efficiently-manage-files-knowledge-and-documentation-in-enterprise-with-erp-corporate-business-technology-free-photo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.slider-img-2 {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('https://static.vecteezy.com/system/resources/previews/009/377/476/non_2x/managing-and-planning-business-processes-and-workflows-for-higher-goals-free-photo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.slider-img-4 {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('https://static.vecteezy.com/system/resources/previews/003/621/227/non_2x/man-holding-tablet-with-padlock-shield-protects-security-icon-on-the-virtual-display-cyber-security-safe-data-protection-business-technology-privacy-concept-information-security-system-free-photo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+</style>
+<div class="w3l_banner_info ">
+		<div class="slider ">
+			<div class="callbacks_container ">
+				<ul class="rslides" id="slider3">
+					<li>
+						<div class="slider-img">
+							<div class="slider_banner_info">
+								<div class="text">
+									<!-- <h3 class="" style="color:black;font-size:40px">We Are The Best Home Service For Making Your Home Shine</h3> -->
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="slider-img-2">
+							<div class="slider_banner_info">
+								<div class="text">
+								  <!-- <h3 class="wisteria" style="color:black;font-size:40px">Making your Home Shine and Spotless Is Our Business And Priority</h3> -->
+								</div>
+
+							</div>
+						</div>
+					</li>
+					
+					<li>
+						<div class="slider-img-4">
+							<div class="slider_banner_info">
+								<div class="text">
+								  <!-- <h3 class="wisteria" style="color:black;font-size:40px">Making your Home Shine and Spotless Is Our Business And Priority</h3> -->
+								</div>
+
+							</div>
+						</div>
+					</li>
+					
+				
+				</ul>
+			</div>
+		</div>
+	</div>
+</div> 
+
+</header>
+<section class="bannerbottom py-lg-5 py-md-4 py-md-3 py-2">
+    <h1 style="font-weight: bolder;" class="text-center text-secondary mb-5">All Services</h1>
+
+    <!-- <iframe style="height:0"></iframe><div class="bannerbottom py-lg-5 py-md-4 py-md-3 py-2"> -->
+		 
+
+		
+<div class="container">
+<div class="row">
+    {% for i in ser %}
+<div class="col-md-4 col-sm-12 w3_ban1">
+<div class="card h-100">
+  <img style="height: 500px;" class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
+  <div class="card-body">
+	<h3>{{i.category}}</h3>
+    <p class="card-text">{{i.desc}}</p>
+	<div class="mt-auto mb-2">
+		<a href="{% url 'explore_services' i.id %}" class="btn btn-dark"><b>Explore</b> </a>
+	</div>
+  </div>
+</div>
+</div>
+
+    
+    {% endfor %}
+	<div class="container card" >
+		<h1 class="text-secondary" style="font-weight: bolder; text-align:center; margin-top:2rem;">About Us</h1>
+		<section class="about" id="section2">
+		<br>
+		<div class="row align-items-center">
+			<div class="col-md-6 image mb-3">
+				<!-- <img src="/static/images/banner.png"  class="w-100 mb-5 mb-md-0" alt=""> -->
+				 <div class="imgs"></div>
+			</div>
+			<div class="col-md-6 content">
+				<p> <i> Home service itself defines that it provides you range of 
+					services at your doorstep.our dedicated and experienced
+					team will statisfy the customers by fulfiling their
+					requirments.We deliver our services wherever you want
+					We are well known for providing all kind of services at
+					very llower cost compared to any other</i>
+				</p>
+			</div>
+		</div>
+    </div>
+</div>
+</div>
+</div>
+</section>
+
+
+{% endblock %}
