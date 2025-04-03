@@ -21,29 +21,56 @@ import datetime
 
 # Create your views here.
 
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from .models import Service_Man, Service_Category, WebsiteReview, Customer
+
 def Home(request):
-    user=""
-    error=""
-    try:
-        user = User.objects.get(id=request.user.id)
+    error = ""
+    user = None
+
+    # Check if the user is authenticated before querying
+    if request.user.is_authenticated:
         try:
-            sign = Customer.objects.get(user=user)
-            error = "pat"
-        except:
+            user = User.objects.get(id=request.user.id)
+            if Customer.objects.filter(user=user).exists():
+                error = "pat"
+        except User.DoesNotExist:
             pass
-    except:
-        pass
-    ser1 = Service_Man.objects.all()
-    ser = Service_Category.objects.all()
-    for i in ser:
-        count=0
-        for j in ser1:
-            if i.category==j.service_name:
-                count+=1
-        i.total = count
-        i.save()
-    d = {'error': error, 'ser': ser}
-    return render(request,'home.html',d)
+
+    # Fetch all service providers and categories
+    service_men = Service_Man.objects.all()
+    categories = Service_Category.objects.all()
+
+    # Count service providers per category
+    for category in categories:
+        category.total = service_men.filter(service_name=category.category).count()
+        category.save()
+
+    # Fetch reviews
+    user_review = None
+    last_reviews = WebsiteReview.objects.order_by('-created_at')[:2]  # Default to last two reviews
+
+    if request.user.is_authenticated:
+        user_review = WebsiteReview.objects.filter(user=request.user).order_by('-created_at').first()
+        last_reviews = WebsiteReview.objects.exclude(user=request.user).order_by('-created_at')[:2]
+
+    # Prepare the final reviews list
+    reviews = []
+    if user_review:
+        reviews.append(user_review)
+
+    reviews.extend(last_reviews)
+    reviews = reviews[:3]  # Ensure only 3 reviews are displayed
+
+    context = {
+        'error': error,
+        'ser': categories,
+        'reviews': reviews,
+    }
+
+    return render(request, 'home.html', context)
+
 
 def contact(request):
     error=False
@@ -1197,3 +1224,31 @@ def paymenthandler(request,**kwargs):
     else:
        # if other than POST request is made.
         return HttpResponseBadRequest()
+    
+    
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import WebsiteReview
+
+@login_required
+def website_reviews(request):
+    reviews = WebsiteReview.objects.all().order_by('-created_at')  # Get all reviews
+
+    if request.method == "POST":
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+
+        # Prevent duplicate reviews by the same user
+        if WebsiteReview.objects.filter(user=request.user).exists():
+            review = WebsiteReview.objects.get(user=request.user)
+            review.rating = rating
+            review.comment = comment
+            review.save()
+        else:
+            WebsiteReview.objects.create(user=request.user, rating=rating, comment=comment)
+
+        return redirect('website_reviews')  # Redirect to avoid duplicate form submissions
+
+    avg_rating = WebsiteReview.get_average_rating()  # Get average rating
+
+    return render(request, 'website_reviews.html', {'reviews': reviews, 'avg_rating': avg_rating})

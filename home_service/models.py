@@ -94,3 +94,21 @@ class Order(models.Model):
 
     def __str__(self):
         return self.service.user.first_name+" "+self.customer.user.first_name
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class WebsiteReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # The user who submits the review
+    rating = models.PositiveIntegerField(default=1)  # Rating between 1-5
+    comment = models.TextField(blank=True, null=True)  # Optional review text
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp of the review
+
+    def __str__(self):
+        return f"{self.user.username} - {self.rating}⭐"
+
+    @classmethod
+    def get_average_rating(cls):
+        avg = cls.objects.aggregate(models.Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 0  # Get average rating with 1 decimal place

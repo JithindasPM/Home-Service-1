@@ -5,6 +5,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from home_service import views
 from django.contrib.auth import views as auth_views
+from home_service.views import website_reviews
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',Home,name="home"),
@@ -69,4 +72,7 @@ urlpatterns = [
     path('paymenthandler/<int:pk>/', views.paymenthandler, name='paymenthandler'),
     path('payment_success/', views.payment_success, name='payment_success'),
     path('payment_failure/', views.payment_failure, name='payment_failure'),
+    
+    path('reviews/', website_reviews, name='website_reviews'),
+    
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
