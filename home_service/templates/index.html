@@ -97,16 +97,16 @@
 
             <form class="d-flex" role="search" method="GET" action="{% url 'customer_service_cat_search' %}">
               <div id="category_search_box">
-                <input class="form-control me-2" name="category" type="search" placeholder="Search Category" aria-label="Search">
+                <input class="form-control mt-3" name="category" type="search" placeholder="Search Category" aria-label="Search">
               </div>
-              <button class="btn btn-dark" type="submit">Search</button>
+              <button class="btn btn-dark my-3" type="submit">Search</button>
             </form>            
 
             <form class="d-flex" role="search" method="GET" action="{% url 'customer_service_city_search' %}">
               <div id="city_search_box">
-                <input class="form-control me-2" name="city" type="search" placeholder="Search City" aria-label="Search">
+                <input class="form-control mt-3" name="city" type="search" placeholder="Search City" aria-label="Search">
               </div>
-              <button class="btn btn-dark" type="submit">Search</button>
+              <button class="btn btn-dark my-3" type="submit">Search</button>
             </form>            
 
 
@@ -228,7 +228,6 @@
                   <li><a class="text-white" href="#">About us</a></li>
                   <li><a class="text-white" href="#">Become Service Provider</a></li>
                   <li><a class="text-white" href="#">Services</a></li>
-                  <li><a class="text-white" href="#">contact</a></li>
                 </ul>
               </div>
               <!-- Grid column -->
@@ -240,10 +239,8 @@
                   Information
                 </h6>
                 <ul class="list-unstyled mb-4">
-                  <li><a class="text-white" href="#">Help center</a></li>
-                  <li><a class="text-white" href="#">Money refund</a></li>
-                  <li><a class="text-white" href="#">Shipping info</a></li>
-                  <li><a class="text-white" href="#">Refunds</a></li>
+                  <li><a class="text-white" href="#">Reviews</a></li>
+                  <li><a class="text-white" href="#">Verifications</a></li>
                 </ul>
               </div>
               <!-- Grid column -->
@@ -255,9 +252,8 @@
                   Support
                 </h6>
                 <ul class="list-unstyled mb-4">
-                  <li><a class="text-white" href="#">Help center</a></li>
-                  <li><a class="text-white" href="#">Documents</a></li>
-                  <li><a class="text-white" href="#">Account restore</a></li>
+                  <li><a class="text-white" href="#">Profile</a></li>
+                  <li><a class="text-white" href="#">Forgot Password</a></li>
                   <li><a class="text-white" href="#">My orders</a></li>
                 </ul>
               </div>
@@ -267,13 +263,13 @@
               <div class="col-12 col-sm-12 col-lg-3">
                 <!-- Links -->
                 <h6 class="text-uppercase text-white fw-bold mb-2">Newsletter</h6>
-                <p class="text-white">Stay in touch with latest updates about our products and offers</p>
-                <div class="input-group mb-3">
+                <p class="text-white">Stay in touch with latest updates about our Services</p>
+                {% comment %} <div class="input-group mb-3">
                   <input type="email" class="form-control border" placeholder="Email" aria-label="Email" aria-describedby="button-addon2" />
                   <button class="btn btn-light border shadow-0" type="button" id="button-addon2" data-mdb-ripple-color="dark">
                     Join
                   </button>
-                </div>
+                </div> {% endcomment %}
               </div>
               <!-- Grid column -->
             </div>

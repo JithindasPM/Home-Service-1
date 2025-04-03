@@ -58,10 +58,10 @@
 						</div>
 						<div class="col-md-12">
 							<label for="contactemail">Date</label>
-							<input class="form-control" type="date" name="date" required="">
+							<input class="form-control" type="date" name="date" id="bookingDate" required>
 						</div>
 					</div>
-					<div class="row">
+					{% comment %} <div class="row">
 						<div class="col-md-12">
 							<label for="contactusername">Days</label>
 							<select class="form-control" name="day" required="">
@@ -86,7 +86,7 @@
 									<option>6</option>
 								</select>
 						</div>
-					</div>
+					</div> {% endcomment %}
 					<div class="text-center">
 						<button type="submit" class="btn btn-info" style="margin-top:5%;">Book Now</button>
 					</div>
@@ -99,5 +99,12 @@
 	</div>
 </section>
 	<!-- //contact -->
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			let today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+			document.getElementById("bookingDate").setAttribute("min", today); // Set as min attribute
+		});
+	</script>
 
 {% endblock %}

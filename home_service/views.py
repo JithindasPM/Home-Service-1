@@ -77,48 +77,95 @@ def Admin_Home(request):
 def about(request):
     return render(request,'about.html')
 
+# class LoginUserView(View):
+#     template_name = 'login.html'
+
+#     def get(self, request):
+#         return render(request, self.template_name, {'error': ''})
+
+#     def post(self, request):
+#         error = ""
+#         u = request.POST.get('uname')
+#         p = request.POST.get('pwd')
+#         user = authenticate(username=u, password=p)
+#         sign = ""
+
+#         if user:
+#             try:
+#                 sign = Customer.objects.get(user=user)
+#             except Customer.DoesNotExist:
+#                 pass
+
+#             if sign:
+#                 login(request, user)
+#                 return redirect('user_home')  # Replace 'success_redirect_url_pat1' with your desired URL
+#             else:
+#                 stat = Status.objects.get(status="Accept")
+#                 pure = False
+
+#                 try:
+#                     pure = Service_Man.objects.get(status=stat, user=user)
+#                 except Service_Man.DoesNotExist:
+#                     pass
+
+#                 if pure:
+#                     login(request, user)
+#                     return redirect('user_home')  # Replace 'success_redirect_url_pat2' with your desired URL
+#                 else:
+#                     login(request, user)
+#                     return redirect('login')  # Replace 'notmember_redirect_url' with your desired URL
+#         else:
+#             error = "not"
+
+#         return render(request, self.template_name, {'error': error})
+    
+    
+from django.contrib import messages
+from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from .models import Customer, Service_Man, Status  # Import necessary models
+
 class LoginUserView(View):
     template_name = 'login.html'
 
     def get(self, request):
-        return render(request, self.template_name, {'error': ''})
+        return render(request, self.template_name)
 
     def post(self, request):
-        error = ""
         u = request.POST.get('uname')
         p = request.POST.get('pwd')
         user = authenticate(username=u, password=p)
-        sign = ""
 
         if user:
             try:
                 sign = Customer.objects.get(user=user)
             except Customer.DoesNotExist:
-                pass
+                sign = None
 
             if sign:
                 login(request, user)
-                return redirect('user_home')  # Replace 'success_redirect_url_pat1' with your desired URL
-            else:
+                return redirect('user_home')  # Redirect if a Customer
+
+            try:
                 stat = Status.objects.get(status="Accept")
-                pure = False
+                pure = Service_Man.objects.get(status=stat, user=user)
+            except Service_Man.DoesNotExist:
+                pure = None
 
-                try:
-                    pure = Service_Man.objects.get(status=stat, user=user)
-                except Service_Man.DoesNotExist:
-                    pass
+            if pure:
+                login(request, user)
+                return redirect('user_home')  # Redirect if a Service_Man
 
-                if pure:
-                    login(request, user)
-                    return redirect('user_home')  # Replace 'success_redirect_url_pat2' with your desired URL
-                else:
-                    login(request, user)
-                    return redirect('login')  # Replace 'notmember_redirect_url' with your desired URL
-
+            login(request, user)
+            return redirect('login')  # Default redirect
         else:
-            error = "not"
+            messages.error(request, "no_account")  # Show modal on login failure
+            return redirect('login')
 
-        return render(request, self.template_name, {'error': error})
+        return render(request, self.template_name)
+
+    
 class LoginAdminView(View):
     template_name = 'admin_login.html'
 
@@ -140,6 +187,34 @@ class LoginAdminView(View):
         return render(request, self.template_name, {'error': error})
 
 
+# def Signup_User(request):
+#     error = ""
+#     if request.method == 'POST':
+#         f = request.POST['fname']
+#         l = request.POST['lname']
+#         u = request.POST['uname']
+#         e = request.POST['email']
+#         p = request.POST['pwd']
+#         con = request.POST['contact']
+#         add = request.POST['address']
+#         type = request.POST['type']
+#         im = request.FILES['image']
+#         dat = datetime.date.today()
+#         user = User.objects.create_user(email=e, username=u, password=p, first_name=f,last_name=l)
+#         if type=="customer":
+#             Customer.objects.create(user=user,contact=con,address=add,image=im)
+#         else:
+#             stat = Status.objects.get(status='pending')
+#             Service_Man.objects.create(doj=dat,image=im,user=user,contact=con,address=add,status=stat)
+#         error = "create"
+#     d = {'error':error}
+#     return render(request,'signup.html',d)
+
+import datetime
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from .models import Customer, Service_Man, Status
+
 def Signup_User(request):
     error = ""
     if request.method == 'POST':
@@ -148,20 +223,29 @@ def Signup_User(request):
         u = request.POST['uname']
         e = request.POST['email']
         p = request.POST['pwd']
+        cp = request.POST['cpwd']  # Confirm Password
         con = request.POST['contact']
         add = request.POST['address']
         type = request.POST['type']
         im = request.FILES['image']
-        dat = datetime.date.today()
-        user = User.objects.create_user(email=e, username=u, password=p, first_name=f,last_name=l)
-        if type=="customer":
-            Customer.objects.create(user=user,contact=con,address=add,image=im)
+
+        if p != cp:  # Check if passwords match
+            error = "Passwords do not match!"
         else:
-            stat = Status.objects.get(status='pending')
-            Service_Man.objects.create(doj=dat,image=im,user=user,contact=con,address=add,status=stat)
-        error = "create"
-    d = {'error':error}
-    return render(request,'signup.html',d)
+            dat = datetime.date.today()
+            user = User.objects.create_user(email=e, username=u, password=p, first_name=f, last_name=l)
+            
+            if type == "customer":
+                Customer.objects.create(user=user, contact=con, address=add, image=im)
+            else:
+                stat = Status.objects.get(status='pending')
+                Service_Man.objects.create(doj=dat, image=im, user=user, contact=con, address=add, status=stat)
+
+            error = "create"
+
+    d = {'error': error}
+    return render(request, 'signup.html', d)
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -250,34 +334,80 @@ def Confirm_order(request):
     return render(request,'customer_order.html',d)
 
 
-def Customer_Booking(request,pid):
+# def Customer_Booking(request,pid):
+#     if not request.user.is_authenticated:
+#         return redirect('login')
+#     user= User.objects.get(id=request.user.id)
+#     error=""
+#     try:
+#         sign = Customer.objects.get(user=user)
+#         error = "pat"
+#     except:
+#         sign = Service_Man.objects.get(user=user)
+#         pass
+#     terror=False
+#     ser1 = Service_Man.objects.get(id=pid)
+#     print(ser1.price)
+#     if request.method == "POST":
+#         n = request.POST['name']
+#         c = request.POST['contact']
+#         add = request.POST['add']
+#         dat = request.POST['date']
+#         da = request.POST['day']
+#         ho = request.POST['hour']
+#         price=ser1.price * int(ho)
+#         print(price)
+#         st = Status.objects.get(status="pending")
+#         Order.objects.create(status=st,service=ser1,customer=sign,book_date=dat,book_days=da,book_hours=ho,price=price)
+#         terror=True
+#     d = {'error':error,'ser':sign,'terror':terror}
+#     return render(request,'booking.html',d)
+
+def Customer_Booking(request, pid):
     if not request.user.is_authenticated:
         return redirect('login')
-    user= User.objects.get(id=request.user.id)
-    error=""
+    
+    user = User.objects.get(id=request.user.id)
+    error = ""
+    
     try:
         sign = Customer.objects.get(user=user)
         error = "pat"
     except:
         sign = Service_Man.objects.get(user=user)
-        pass
-    terror=False
+    
+    terror = False
     ser1 = Service_Man.objects.get(id=pid)
     print(ser1.price)
+    
     if request.method == "POST":
         n = request.POST['name']
         c = request.POST['contact']
         add = request.POST['add']
         dat = request.POST['date']
-        da = request.POST['day']
-        ho = request.POST['hour']
-        price=ser1.price * int(ho)
+        
+        # Set static values
+        da = 1  # Static day = 1
+        ho = 8  # Static hour = 8
+        price = ser1.price * ho  # Calculate price based on static hours
+        
         print(price)
         st = Status.objects.get(status="pending")
-        Order.objects.create(status=st,service=ser1,customer=sign,book_date=dat,book_days=da,book_hours=ho,price=price)
-        terror=True
-    d = {'error':error,'ser':sign,'terror':terror}
-    return render(request,'booking.html',d)
+        
+        Order.objects.create(
+            status=st,
+            service=ser1,
+            customer=sign,
+            book_date=dat,
+            book_days=da,
+            book_hours=ho,
+            price=price
+        )
+        terror = True
+    
+    d = {'error': error, 'ser': sign, 'terror': terror}
+    return render(request, 'booking.html', d)
+
 
 def Booking_detail(request,pid):
     user= User.objects.get(id=request.user.id)
@@ -375,6 +505,65 @@ def Edit_Profile(request):
     return render(request, 'edit_profile.html',d)
 
 
+# def Edit_Service_Profile(request):
+#     user = User.objects.get(id=request.user.id)
+#     error = ""
+#     try:
+#         sign = Customer.objects.get(user=user)
+#         error = "pat"
+#     except:
+#         sign = Service_Man.objects.get(user=user)
+#     terror = False
+#     ser = Service_Category.objects.all()
+#     car = ID_Card.objects.all()
+#     city = City.objects.all()
+#     if request.method == 'POST':
+#         f = request.POST['fname']
+#         l = request.POST['lname']
+#         u = request.POST['uname']
+#         try:
+#             i = request.FILES['image']
+#             sign.image=i
+#             sign.save()
+#         except:
+#             pass
+#         try:
+#             i1 = request.FILES['image1']
+#             sign.id_card=i1
+#             sign.save()
+#         except:
+#             pass
+#         ad = request.POST['address']
+#         e = request.POST['email']
+#         con = request.POST['contact']
+#         se = request.POST['service']
+#         card = request.POST['card']
+#         cit = request.POST['city']
+#         ex = request.POST['exp']
+#         dob = request.POST['dob']
+#         if dob:
+#             sign.dob=dob
+#             sign.save()
+#         ci=City.objects.get(city=cit)
+#         sign.address = ad
+#         sign.contact=con
+#         sign.city=ci
+#         user.first_name = f
+#         user.last_name = l
+#         user.email = e
+#         sign.id_type = card
+#         sign.experience = ex
+#         sign.service_name = se
+#         user.save()
+#         sign.save()
+#         terror = True
+#     d = {'city':city,'terror':terror,'error':error,'pro':sign,'car':car,'ser':ser}
+#     return render(request, 'edit_service_profile.html',d)
+
+from datetime import date
+from django.contrib import messages
+from django.shortcuts import render
+
 def Edit_Service_Profile(request):
     user = User.objects.get(id=request.user.id)
     error = ""
@@ -383,26 +572,30 @@ def Edit_Service_Profile(request):
         error = "pat"
     except:
         sign = Service_Man.objects.get(user=user)
-    terror = False
+
     ser = Service_Category.objects.all()
     car = ID_Card.objects.all()
     city = City.objects.all()
+
     if request.method == 'POST':
         f = request.POST['fname']
         l = request.POST['lname']
         u = request.POST['uname']
+        
         try:
             i = request.FILES['image']
-            sign.image=i
+            sign.image = i
             sign.save()
         except:
             pass
+        
         try:
             i1 = request.FILES['image1']
-            sign.id_card=i1
+            sign.id_card = i1
             sign.save()
         except:
             pass
+        
         ad = request.POST['address']
         e = request.POST['email']
         con = request.POST['contact']
@@ -411,13 +604,25 @@ def Edit_Service_Profile(request):
         cit = request.POST['city']
         ex = request.POST['exp']
         dob = request.POST['dob']
+
+        # Validate Date of Birth
         if dob:
-            sign.dob=dob
-            sign.save()
-        ci=City.objects.get(city=cit)
+            dob_date = date.fromisoformat(dob)  # Convert string to date
+            today = date.today()
+            age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+
+            if age < 18:  # If under 18, show error and stay on page
+                messages.error(request, "You must be at least 18 years old.")
+                return render(request, 'edit_service_profile.html', {
+                    'city': city, 'error': error, 'pro': sign, 'car': car, 'ser': ser
+                })
+
+            sign.dob = dob_date  # Only update DOB if valid
+
+        ci = City.objects.get(city=cit)
         sign.address = ad
-        sign.contact=con
-        sign.city=ci
+        sign.contact = con
+        sign.city = ci
         user.first_name = f
         user.last_name = l
         user.email = e
@@ -426,9 +631,17 @@ def Edit_Service_Profile(request):
         sign.service_name = se
         user.save()
         sign.save()
-        terror = True
-    d = {'city':city,'terror':terror,'error':error,'pro':sign,'car':car,'ser':ser}
-    return render(request, 'edit_service_profile.html',d)
+        
+        messages.success(request, "Update Successfully")
+        return redirect('service_profile')  # Redirect only for valid age
+    
+    d = {'city': city, 'error': error, 'pro': sign, 'car': car, 'ser': ser}
+    return render(request, 'edit_service_profile.html', d)
+
+
+
+
+
 
 def Edit_Admin_Profile(request):
     error = False
