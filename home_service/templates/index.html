@@ -19,6 +19,7 @@
 <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
 
 
@@ -53,6 +54,20 @@
 .content {
     flex: 1;
 }
+.search-form input {
+  height: 30px;
+  font-size: 14px;
+  padding: 4px 8px;
+  margin-top: 10px;
+}
+
+.search-form button {
+  height: 32px;
+  font-size: 14px;
+  padding: 4px 10px;
+  margin-top: 10px;
+  margin-left: 5px;
+}
 
 </style>
 
@@ -60,7 +75,10 @@
 <header>
 	<!-- header -->
 	<nav class="navbar navbar-expand-lg navbar-light">
-      <a class="navbar-brand" href="{% url 'home' %}"><i class="fas fa-tools mr-2" aria-hidden="true"></i>FixItNow</a>
+      {% comment %} <a class="navbar-brand" href="{% url 'home' %}"><i class="fas fa-tools mr-2" aria-hidden="true"></i>FixItNow</a> {% endcomment %}
+      <a class="navbar-brand ms-3" href="{% url 'home' %}" style="font-size: 35px;">
+        <i class="fas fa-tools mr-1" aria-hidden="true" style="font-size: 35px;"></i>FixItNow
+      </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -87,17 +105,17 @@
             </form> -->
 
 
-            <div class="form-check form-check-inline">
+            <div class="form-check form-check-inline d-flex justify-contant-center align-center">
               <input class="form-check-input" type="radio" name="search_type" id="search_category" value="category" checked>
               <label class="form-check-label text-white" for="search_category">Category</label>
             </div>
-            <div class="form-check form-check-inline">
+            <div class="form-check form-check-inline d-flex justify-contant-center align-center">
               <input class="form-check-input" type="radio" name="search_type" id="search_city" value="city">
               <label class="form-check-label text-white" for="search_city">City</label>
             </div>
 
 
-            <form class="d-flex" role="search" method="GET" action="{% url 'customer_service_cat_search' %}">
+            {% comment %} <form class="d-flex" role="search" method="GET" action="{% url 'customer_service_cat_search' %}">
               <div id="category_search_box">
                 <input class="form-control mt-3" name="category" type="search" placeholder="Search Category" aria-label="Search">
               </div>
@@ -109,7 +127,21 @@
                 <input class="form-control mt-3" name="city" type="search" placeholder="Search City" aria-label="Search">
               </div>
               <button class="btn btn-dark my-3" type="submit">Search</button>
-            </form>            
+            </form>             {% endcomment %}
+
+            <form class="d-flex search-form me-1" role="search" method="GET" action="{% url 'customer_service_cat_search' %}">
+              <div id="category_search_box">
+                <input class="form-control" name="category" type="search" placeholder="Search Category" aria-label="Search">
+              </div>
+              <button class="btn btn-dark" type="submit">Search</button>
+            </form>
+            
+            <form class="d-flex search-form" role="search" method="GET" action="{% url 'customer_service_city_search' %}">
+              <div id="city_search_box">
+                <input class="form-control" name="city" type="search" placeholder="Search City" aria-label="Search">
+              </div>
+              <button class="btn btn-dark" type="submit">Search</button>
+            </form>
 
 
               <li class="nav-item ">

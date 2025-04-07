@@ -54,6 +54,8 @@ urlpatterns = [
     path('delete_service_man(<int:pid>)',delete_service_man,name="delete_service_man"),
     path('delete_Booking(<int:pid>)',delete_Booking,name="delete_Booking"),
     path('accept_confirmation(<int:pid>)',accept_confirmation,name="accept_confirmation"),
+    path('pending-confirmation/<int:pid>/', views.pending_confirmation, name='pending_confirmation'),
+
     path('Booking_detail(<int:pid>)',Booking_detail,name="Booking_detail"),
     path('delete_admin_order(<int:pid>)',delete_admin_order,name="delete_admin_order"),
     path('order_status(<int:pid>)',Order_status,name="order_status"),

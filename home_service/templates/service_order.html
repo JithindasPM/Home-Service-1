@@ -43,8 +43,6 @@
           <th style="color:black">Contact</th>
           <th style="color:black">Address</th>
           <th style="color:black">Date</th>
-          <th style="color:black">Days</th>
-          <th style="color:black">Hours</th>
           <th style="color:black">Amount</th>
           <th style="color:black">Payment</th>
           <th style="color:black">Status</th>
@@ -59,8 +57,6 @@
             <td>{{i.customer.contact}}</td>
             <td>{{i.customer.address}}</td>
             <td>{{i.book_date}}</td>
-            <td>{{i.book_days}}</td>
-            <td>{{i.book_hours}}</td>
             <td>{{i.price}}</td>
             {% if i.report_status == "Success" %}
                <td style="color:green;">Paid</td>
@@ -77,7 +73,13 @@
               </td>
             {% endif %}
             {% if i.status.status == 'Accept' %}
-              <td style="font-weight:bold;color:blue">Accepted</td>
+              {% comment %} <td style="font-weight:bold;color:blue">Accepted</td> {% endcomment %}
+              <td>
+                <a href="{% url 'pending_confirmation' i.id %}" >
+                  <button class="btn btn-success"  onclick="return confirm('Are You Confirm for Accept Order?')"><i class="fa fa-thumbs-up"></i> Reject</button>
+          
+                </a>
+              </td>
             {% else %}
               <td>
                 <a href="{% url 'accept_confirmation' i.id %}" >

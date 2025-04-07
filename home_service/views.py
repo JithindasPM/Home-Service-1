@@ -830,6 +830,14 @@ def accept_confirmation(request,pid):
     ser.save()
     return redirect('service_order')
 
+def pending_confirmation(request, pid):
+    ser = Order.objects.get(id=pid)
+    sta = Status.objects.get(status='pending')
+    ser.status = sta
+    ser.save()
+    return redirect('service_order')
+
+
 def confirm_message(request,pid):
     ser = Contact.objects.get(id=pid)
     sta = Status.objects.get(status='read')
