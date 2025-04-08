@@ -21,7 +21,7 @@
 </header>
 
 
-<section class="bannerbottom py-lg-5 py-md-4 py-md-3 py-2" style="margin-top:8%">
+<section class="bannerbottom py-lg-5 py-md-4 py-md-3 py-2" style="margin-top:2%">
     <div class="text-center my-5">
         <span class="h1 text-secondary" style="font-weight: 800;">All Services</span>
     </div><hr>
@@ -30,8 +30,8 @@
 <div class="row">
     {% for i in ser %}
 <div class="col-md-4 col-sm-12 w3_ban1">
-<div class="card h-100">
-  <img style="height: 500px;" class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
+<div class="card h-100 p-4">
+  <img style="height: 300px;" class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
   <div class="card-body">
 	  <h5 class="card-title">{{i.category}} <span style="color:red"></h5>
     <p class="card-text">{{i.desc}}</p>

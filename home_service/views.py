@@ -25,11 +25,66 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import Service_Man, Service_Category, WebsiteReview, Customer
 
+# def Home(request):
+#     error = ""
+#     user = None
+
+#     # Check if the user is authenticated before querying
+#     if request.user.is_authenticated:
+#         try:
+#             user = User.objects.get(id=request.user.id)
+#             if Customer.objects.filter(user=user).exists():
+#                 error = "pat"
+#         except User.DoesNotExist:
+#             pass
+
+#     # Fetch all service providers and categories
+#     service_men = Service_Man.objects.all()
+#     categories = Service_Category.objects.all()
+
+#     # Count service providers per category
+#     for category in categories:
+#         category.total = service_men.filter(service_name=category.category).count()
+#         category.save()
+
+#     # Fetch reviews
+#     user_review = None
+#     last_reviews = WebsiteReview.objects.order_by('-created_at')[:2]  # Default to last two reviews
+
+#     if request.user.is_authenticated:
+#         user_review = WebsiteReview.objects.filter(user=request.user).order_by('-created_at').first()
+#         last_reviews = WebsiteReview.objects.exclude(user=request.user).order_by('-created_at')[:2]
+
+#     # Prepare the final reviews list
+#     reviews = []
+#     if user_review:
+#         reviews.append(user_review)
+
+#     reviews.extend(last_reviews)
+#     reviews = reviews[:3]  # Ensure only 3 reviews are displayed
+    
+
+#     context = {
+#         'error': error,
+#         'ser': categories,
+#         'reviews': reviews,
+#     }
+
+#     return render(request, 'home.html', context)
+
 def Home(request):
     error = ""
+    contact_submitted = False  # Track contact form submission
     user = None
 
-    # Check if the user is authenticated before querying
+    if request.method == "POST" and "contact_form" in request.POST:
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+        status = Status.objects.get(status="unread")
+        Contact.objects.create(status=status, name=name, email=email, message1=message)
+        contact_submitted = True
+
     if request.user.is_authenticated:
         try:
             user = User.objects.get(id=request.user.id)
@@ -38,38 +93,36 @@ def Home(request):
         except User.DoesNotExist:
             pass
 
-    # Fetch all service providers and categories
     service_men = Service_Man.objects.all()
     categories = Service_Category.objects.all()
 
-    # Count service providers per category
     for category in categories:
         category.total = service_men.filter(service_name=category.category).count()
         category.save()
 
-    # Fetch reviews
     user_review = None
-    last_reviews = WebsiteReview.objects.order_by('-created_at')[:2]  # Default to last two reviews
+    last_reviews = WebsiteReview.objects.order_by('-created_at')[:2]
 
     if request.user.is_authenticated:
         user_review = WebsiteReview.objects.filter(user=request.user).order_by('-created_at').first()
         last_reviews = WebsiteReview.objects.exclude(user=request.user).order_by('-created_at')[:2]
 
-    # Prepare the final reviews list
     reviews = []
     if user_review:
         reviews.append(user_review)
-
     reviews.extend(last_reviews)
-    reviews = reviews[:3]  # Ensure only 3 reviews are displayed
+    reviews = reviews[:3]
 
     context = {
         'error': error,
         'ser': categories,
         'reviews': reviews,
+        'contact_submitted': contact_submitted,  # pass to template
     }
 
     return render(request, 'home.html', context)
+
+
 
 
 def contact(request):
@@ -214,29 +267,6 @@ class LoginAdminView(View):
         return render(request, self.template_name, {'error': error})
 
 
-# def Signup_User(request):
-#     error = ""
-#     if request.method == 'POST':
-#         f = request.POST['fname']
-#         l = request.POST['lname']
-#         u = request.POST['uname']
-#         e = request.POST['email']
-#         p = request.POST['pwd']
-#         con = request.POST['contact']
-#         add = request.POST['address']
-#         type = request.POST['type']
-#         im = request.FILES['image']
-#         dat = datetime.date.today()
-#         user = User.objects.create_user(email=e, username=u, password=p, first_name=f,last_name=l)
-#         if type=="customer":
-#             Customer.objects.create(user=user,contact=con,address=add,image=im)
-#         else:
-#             stat = Status.objects.get(status='pending')
-#             Service_Man.objects.create(doj=dat,image=im,user=user,contact=con,address=add,status=stat)
-#         error = "create"
-#     d = {'error':error}
-#     return render(request,'signup.html',d)
-
 import datetime
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -360,35 +390,6 @@ def Confirm_order(request):
     d = {'error':error,'order':order}
     return render(request,'customer_order.html',d)
 
-
-# def Customer_Booking(request,pid):
-#     if not request.user.is_authenticated:
-#         return redirect('login')
-#     user= User.objects.get(id=request.user.id)
-#     error=""
-#     try:
-#         sign = Customer.objects.get(user=user)
-#         error = "pat"
-#     except:
-#         sign = Service_Man.objects.get(user=user)
-#         pass
-#     terror=False
-#     ser1 = Service_Man.objects.get(id=pid)
-#     print(ser1.price)
-#     if request.method == "POST":
-#         n = request.POST['name']
-#         c = request.POST['contact']
-#         add = request.POST['add']
-#         dat = request.POST['date']
-#         da = request.POST['day']
-#         ho = request.POST['hour']
-#         price=ser1.price * int(ho)
-#         print(price)
-#         st = Status.objects.get(status="pending")
-#         Order.objects.create(status=st,service=ser1,customer=sign,book_date=dat,book_days=da,book_hours=ho,price=price)
-#         terror=True
-#     d = {'error':error,'ser':sign,'terror':terror}
-#     return render(request,'booking.html',d)
 
 def Customer_Booking(request, pid):
     if not request.user.is_authenticated:

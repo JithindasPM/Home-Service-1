@@ -112,3 +112,4 @@ class WebsiteReview(models.Model):
     def get_average_rating(cls):
         avg = cls.objects.aggregate(models.Avg('rating'))['rating__avg']
         return round(avg, 1) if avg else 0  # Get average rating with 1 decimal place
+
